@@ -14,7 +14,10 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import url, include
+from django.conf.urls.static import static
 from django.contrib import admin
+
+from config import settings
 from post import views as post_views
 
 urlpatterns = [
@@ -25,4 +28,4 @@ urlpatterns = [
 
     # post앱의 url.py모듈을 include시킨다.
     url(r'^post/', include('post.urls')),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -9,7 +9,9 @@
 </head>
 <body>
     {% for post in posts %}
-    {{ post.author }}
+    <span>{{ post.id }}</span>
+    <span>{{ post.photo.url }}</span>
+    <img src="{{ post.photo.url }}" width="300px" alt="">
     {% endfor %}
 </body>
 </html>

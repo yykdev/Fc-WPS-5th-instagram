@@ -26,7 +26,7 @@ class Post(models.Model):
         through='PostLike',
 
     )
-    tags = models.ManyToManyField('Tag')
+    tags = models.ManyToManyField('Tag', blank=True)
 
     def add_comment(self, user, content):
         # 자신을 post로 갖고 전달받은 user를 author로 가지며

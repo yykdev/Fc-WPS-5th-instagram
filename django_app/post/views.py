@@ -1,8 +1,14 @@
+from django.contrib.auth import get_user_model
 from django.http import HttpResponse, HttpResponseNotFound
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.template import loader
+from django.urls import reverse
 
-from member.models import User
+# 자동으로 Django에서 인증에 사용하는 User 모델 클래스를 리턴
+# 어떤 User 모델을 사용하고 있는지 확인 하여 리턴한다.
+User = get_user_model()
+
 from .models import Post
 
 
@@ -33,9 +39,11 @@ def post_detail(request, post_pk):
         # 2. post_list view로 돌아간다
         # 2-1. redirect를 사용
         #   https://docs.djangoproject.com/en/1.11/topics/http/shortcuts/#redirect
-        return redirect('post:post_list')
+        #return redirect('post:post_list')
         # 2-2. HttpResponseRedirect
         #   https://docs.djangoproject.com/en/1.11/ref/request-response/#django.http.HttpResponseRedirect
+        url = reverse('post:post_list')
+        return HttpResponseRedirect(url)
 
     # request에 대해 response를 돌려줄때는 HttpResponse나 render를 사용가능
     # template을 사용하려면 render함수를 사용한다
@@ -64,13 +72,33 @@ def post_detail(request, post_pk):
 
 def post_create(request):
     # POST요청을 받아 Post객체를 생성 후 post_list페이지로 redirect
-    if request.method == 'GET':
-        return render(request, 'post/post_create.html')
-    elif request.method == 'POST':
+    if request.method == 'POST':
         user = User.objects.first()
-        image = request.FILES['image']
-        post = Post.objects.create(author=user, photo=image)
-        return redirect(request, 'post/post_list.html')
+        post = Post.objects.create(
+            author=user,
+            photo=request.FILES['file'],
+        )
+        # POST요청시 name 이 'comment'인 input
+        comment_string = request.POST.get('comment', '')
+        # 빈 문자열 ''이나 None모두 False로 평가되므로
+        # if not 으로 댓글로 쓸 내용 또는 comment키가 전달 되지 않았음을 검사 가능
+        if comment_string:
+            # 댓글로 사용할 문자열이 전달된 경우 위에서 생성한 post객체에 연결되는 Comment객체를 생성해준다.
+            post.comment_set.create(
+                #임의의 user를 사용하므로 나중에 실제 로그인 된 사용자로 바꿔줘야함
+                author=user,
+                content=comment_string,
+            )
+            
+            # Comment.objects.create(
+            #     post=post,
+            #     author=user,
+            #     content=comment_string,
+            # )
+
+        return redirect('post:post_detail', post_pk=post.pk)
+    elif request.method == 'GET':
+        return render(request, 'post/post_create.html')
 
 
 def post_modify(request, post_pk):
@@ -104,3 +132,6 @@ def comment_modify(request, post_pk):
 def comment_delete(request, post_pk, comment_pk):
     # POST요청을 받아 Comment객체를 delete, 이후 post_detail페이지로 redirect
     pass
+
+def post_anyway(request):
+    return HttpResponse('올바른 접근이 아닙니다')

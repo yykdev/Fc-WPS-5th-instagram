@@ -1,14 +1,45 @@
+{% load static %}
+<!--
+	템플릿 상속
+		https://docs.djangoproject.com/en/1.11/ref/templates/language/#template-inheritance
+-->
 <!doctype html>
-<html lang="en">
+<html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Instagram</title>
+	<meta charset="UTF-8">
+	<meta name="viewport"
+	      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Instagram</title>
+	<link rel="stylesheet" href="{% static 'css/normalize.css' %}">
+	<link rel="stylesheet" href="{% static 'css/base.min.css' %}">
+	<link rel="stylesheet" href="{% static 'css/layout.min.css' %}">
+	<link rel="stylesheet" href="{% static 'css/post.min.css' %}">
 </head>
 <body>
-    {% block content %}
-    {% endblock %}
+	<div id="wrap">
+		<header class="top-header">
+			<nav>
+				<div class="nav-left nav-item">
+					<a href="#">
+						<img src="{% static 'images/logo.png' %}" alt="">
+					</a>
+				</div>
+				<div class="nav-center nav-item">
+					<input type="text" placeholder="검색">
+				</div>
+				<div class="nav-right nav-item">
+					<a href="#"><img src="{% static 'images/icon_explore.png' %}" alt=""></a>
+					<a href="#"><img src="{% static 'images/icon_heart.png' %}" alt=""></a>
+					<a href="#"><img src="{% static 'images/icon_profile.png' %}" alt=""></a>
+				</div>
+			</nav>
+		</header>
+
+		<div class="container">
+			{% block content %}
+			{% endblock %}
+		</div>
+	</div>
 </body>
 </html>

@@ -1,4 +1,7 @@
+from django.http import HttpResponse
+from django.http import HttpResponseNotFound
 from django.shortcuts import render, redirect
+from django.template import loader
 
 from member.models import User
 from .models import Post
@@ -17,11 +20,21 @@ def post_list(request):
 
 
 def post_detail(request, post_pk):
-    post = Post.objects.get(pk=post_pk)
+    # Model(DB)에서 post_pk에 해당하는 Post객체를 가
+    try:
+        post = Post.objects.get(pk=post_pk)
+    except Post.DoesNotExist as e:
+        return HttpResponseNotFound('Post not found, detail: {}'.format(e))
+
+    template = loader.get_template('post/post_detail.html')
+
     context = {
         'post': post
     }
-    return render(request, 'post/post_detail.html', context)
+
+    rendered_string = template.render(context=context, request=request)
+    # return render(request, 'post/post_detail.html', context)
+    return HttpResponse(rendered_string)
 
 
 def post_create(request):

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -8,10 +8,14 @@
     <title>Document</title>
 </head>
 <body>
+    <div>
+        <a href="{% url 'post_create' %}">등록하기</a>
+    </div>
+    <!--4. post_list.html에서 for loop사용해 전달된 posts변수 순환 및 출력-->
     {% for post in posts %}
-    <span>{{ post.id }}</span>
-    <span>{{ post.photo.url }}</span>
-    <img src="{{ post.photo.url }}" width="300px" alt="">
+        <div>
+            <a href="{% url 'post_detail' post_pk=post.pk %}"><img src="{{ post.photo.url }}" width="100px" alt=""></a>
+        </div>
     {% endfor %}
 </body>
 </html>

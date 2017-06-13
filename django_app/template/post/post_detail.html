@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<div>
+    <span>작성자 : {{ post.author }}</span>
+</div>
+<div>
+    <span>작성일 : {{ post.modified_date }}</span>
+</div>
+<div>
+    <img src="{{ post.photo.url }}" width="400px" alt="">
+</div>
+<div>
+    <a href="{% url 'post_modified' post_pk=post.pk %}">수정하기</a>
+    <a href="{% url 'post_delete' post_pk=post.pk %}">삭제하기</a>
+</div>
+</body>
+</html>

@@ -18,7 +18,6 @@ from django.conf.urls.static import static
 from django.contrib import admin
 
 from config import settings
-from post import views as post_views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -28,4 +27,5 @@ urlpatterns = [
 
     # post앱의 url.py모듈을 include시킨다.
     url(r'^post/', include('post.urls')),
+    url(r'^member/', include('member.urls'))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

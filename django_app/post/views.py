@@ -86,10 +86,10 @@ def post_create(request):
             # 댓글로 사용할 문자열이 전달된 경우 위에서 생성한 post객체에 연결되는 Comment객체를 생성해준다.
             post.comment_set.create(
                 #임의의 user를 사용하므로 나중에 실제 로그인 된 사용자로 바꿔줘야함
-                author=user,
+                #author=user,
                 content=comment_string,
             )
-            
+
             # Comment.objects.create(
             #     post=post,
             #     author=user,

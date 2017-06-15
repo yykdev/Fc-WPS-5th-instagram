@@ -1,4 +1,4 @@
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout as django_logout
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
@@ -25,3 +25,7 @@ def login_check(request):
         if request.user.is_authenticated:
             return redirect('post:post_list')
         return render(request, 'member/login.html')
+
+def logout(request):
+    django_logout(request)
+    return redirect('post:post_list')

@@ -22,4 +22,6 @@ def login_check(request):
             HttpResponse('Login invalid')
 
     else:
+        if request.user.is_authenticated:
+            return redirect('post:post_list')
         return render(request, 'member/login.html')

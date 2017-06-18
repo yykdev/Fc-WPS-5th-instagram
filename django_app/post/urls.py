@@ -20,8 +20,10 @@ urlpatterns = [
     # 정규표현식에서 매칭된 그룹을 키워드인수로 반환하는 방법
     # 그룹의 가장 앞 부분에 ?P<패턴이름>을 지정
     url(r'^(?P<post_pk>\d+)/$', views.post_detail, name='post_detail'),
-    url(r'^(?P<post_pk>\d+)/delete/$', views.post_delete, name='post_delete'),
-    url(r'^(?P<post_pk>\d+)/modify/$', views.post_modify, name='post_modified'),
+
+    # post_create와 매칭
     url(r'^create/$', views.post_create, name='post_create'),
-    url(r'^.*/$', views.post_anyway, name='post_anyway')
+
+    # 위쪽의 결과들과 매칭되지 않을 경우
+    url(r'^.*/$', views.post_anyway, name='post_anyway'),
 ]

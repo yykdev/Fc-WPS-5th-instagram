@@ -1,4 +1,5 @@
 header.top-header {
+  background-color: #fff;
   border-bottom: 1px solid rgba(0, 0, 0, 0.0975);
 }
 
@@ -73,6 +74,19 @@ form.form-inline-login input {
   padding: 5px 8px;
   font-size: 11px;
   margin-right: 6px;
+}
+
+.message {
+  position: fixed;
+  width: 50%;
+  right: 3%;
+  top: 3%;
+  padding: 10px;
+  border: 1px solid #333;
+  border-radius: 3px;
+  background-color: rgba(255, 255, 255, 0.5);
+  font-size: 15px;
+  text-align: center;
 }
 
 .container {

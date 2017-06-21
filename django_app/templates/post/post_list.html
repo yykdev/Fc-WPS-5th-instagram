@@ -6,10 +6,31 @@
 		include
 			https://docs.djangoproject.com/en/1.11/ref/templates/builtins/#include
 	-->
+	<div>
+		<a href="{% url 'post:post_create' %}" class="btn">Post Create</a>
+	</div>
 	{% for post in posts %}
-		<div>
-			<a href="{% url 'post:post_create' %}" class="btn">Post Create</a>
-		</div>
 		{% include 'include/post.html' with type='list' %}
 	{% endfor %}
+
+    <div class="test">
+        {% for key, value in request.GET.items %}
+        <div>{{ key }} : {{ value }}</div>
+        {% endfor %}
+    </div>
+
+    <!-- 이전 / 현재 / 다음 페이지 버튼 -->
+
+    {% if posts.has_previous %}
+        <a href="{% url 'post:post_list' %}?page=1" class="btn" >처음</a>
+        <a href="{% url 'post:post_list' %}?page={{ posts.previous_page_number }}" class="btn">이전 ( {{ posts.previous_page_number }} 페이지 )</a>
+    {% endif %}
+
+    <a href="#" class="btn">{{ posts.number }} 페이지</a>
+
+    {% if posts.has_next %}
+        <a href="{% url 'post:post_list' %}?page={{ posts.next_page_number }}" class="btn">다음 ( {{ posts.next_page_number }} 페이지 )</a>
+        <a href="{% url 'post:post_list' %}?page={{ posts.paginator.num_pages }}" class="btn" >끝</a>
+    {% endif %}
+
 {% endblock %}

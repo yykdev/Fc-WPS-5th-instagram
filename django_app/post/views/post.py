@@ -1,28 +1,69 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
-from django.shortcuts import render, redirect
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.template import loader
 from django.urls import reverse
 
-from .forms import PostForm
-from .models import Post
+from post.decorators import post_owner
+from post.forms import CommentForm
+from ..forms import PostForm
+from ..models import Post, Tag
 
 # 자동으로 Django에서 인증에 사용하는 User모델클래스를 리턴
 #   https://docs.djangoproject.com/en/1.11/topics/auth/customizing/#django.contrib.auth.get_user_model
 User = get_user_model()
 
+__all__ = (
+    'post_list',
+    'post_detail',
+    'post_create',
+    'post_modify',
+    'post_delete',
+    'hashtag_post_list',
+)
 
-def post_list(request):
+
+def post_list_original(request):
     # 모든 Post목록을 'posts'라는 key로 context에 담아 return render처리
     # post/post_list.html을 template으로 사용하도록 한다
 
     # 각 포스트에 대해 최대 4개까지의 댓글을 보여주도록 템플릿에 설정
+    # 각 post하나당 CommentForm을 하나씩 가지도록 리스트 컴프리헨션 사용
+
+    # 숙제
+    # 1. post_list와 hashtag_post_list에서 pagination을 이용해서
+    #    한 번에 10개씩만 표시하도록 수정
+    #   https://docs.djangoproject.com/en/1.11/topics/pagination/
+    # 2. 좋아요 버튼 구현 및 좋아요 한 사람 목록 출력
     posts = Post.objects.all()
     context = {
         'posts': posts,
+        'comment_form': CommentForm(),
     }
     return render(request, 'post/post_list.html', context)
+
+
+def post_list(request):
+    all_posts = Post.objects.all()
+    paginator = Paginator(all_posts, 2)
+
+    page = request.GET.get('page')
+
+    try:
+        posts = paginator.page(page)
+    except PageNotAnInteger:
+        posts = paginator.page(1)
+    except EmptyPage:
+        posts = paginator.page(paginator.num_pages)
+
+    context = {
+        'posts': posts,
+        'comment_form': CommentForm(),
+    }
+
+    return render(request, 'post/post_list.html', context=context)
 
 
 def post_detail(request, post_pk):
@@ -33,7 +74,7 @@ def post_detail(request, post_pk):
     # 가져오는 과정에서 예외처리를 한다 (Model.DoesNotExist)
     try:
         post = Post.objects.get(pk=post_pk)
-    except Post.DoesNotExist as e:
+    except Post.DoesNotExist:
         # 1. 404 Notfound를 띄워준다
         # return HttpResponseNotFound('Post not found, detail: {}'.format(e))
 
@@ -109,9 +150,7 @@ def post_create(request):
         form = PostForm(data=request.POST, files=request.FILES)
         if form.is_valid():
             # ModelForm의 save()메서드를 사용해서 Post객체를 가져옴
-            post = form.save(commit=False)
-            post.author = request.user
-            post.save()
+            post = form.save(author=request.user)
             return redirect('post:post_detail', post_pk=post.pk)
     else:
         # post/post_create.html을 render해서 리턴
@@ -122,31 +161,68 @@ def post_create(request):
     return render(request, 'post/post_create.html', context)
 
 
+@post_owner
+@login_required
 def post_modify(request, post_pk):
-    # 수정
-    pass
+    # 현재 수정하고자하는 Post객체
+    post = Post.objects.get(pk=post_pk)
+
+    if request.method == 'POST':
+        form = PostForm(data=request.POST, files=request.FILES, instance=post)
+        if form.is_valid():
+            form.save()
+            return redirect('post:post_detail', post_pk=post.pk)
+    else:
+        form = PostForm(instance=post)
+    context = {
+        'form': form,
+    }
+    return render(request, 'post/post_modify.html', context)
 
 
+@post_owner
+@login_required
 def post_delete(request, post_pk):
     # post_pk에 해당하는 Post에 대한 delete요청만을 받음
     # 처리완료후에는 post_list페이지로 redirect
-    pass
+    post = get_object_or_404(Post, pk=post_pk)
+    if request.method == 'POST':
+        post.delete()
+        return redirect('post:post_list')
+    else:
+        context = {
+            'post': post,
+        }
+        return render(request, 'post/post_delete.html', context)
 
 
-def comment_create(request, post_pk):
-    # POST요청을 받아 Comment객체를 생성 후 post_detail페이지로 redirect
-    pass
+def hashtag_post_list(request, tag_name):
+    # 1. template생성
+    #   post/hashtag_post_list.html
+    #   tag_name과 post_list, post_count변수를 전달받아 출력
+    #   tag_name과 post_count는 최상단 제목에 사용
+    #   post_list는 순회하며 post_thumbnail에 해당하는 html을 구성해서 보여줌
+    #
+    # 2. 쿼리셋 작성
+    #   특정 tag_name이 해당 Post에 포함된 Comment의 tags에 포함되어있는 Post목록 쿼리 생성
+    #        posts = Post.objects.filter()
+    #
+    # 3. urls.py와 이 view를 연결
+    # 4. 해당 쿼리셋을 적절히 리턴
+    # 5. Comment의 make_html_and_add_tags()메서드의
+    #    a태그를 생성하는 부분에 이 view에 연결되는 URL을 삽입
+    tag = get_object_or_404(Tag, name=tag_name)
 
+    # Post에 달린 댓글의 Tag까지 검색할 때
+    # posts = Post.objects.filter(comment__tags=tag).distinct()
 
-def comment_modify(request, post_pk):
-    # 수정
-    pass
+    # Post의 my_comment에 있는 Tag만 검색할 때
+    posts = Post.objects.filter(my_comment__tags=tag)
+    posts_count = posts.count()
 
-
-def comment_delete(request, post_pk, comment_pk):
-    # POST요청을 받아 Comment객체를 delete, 이후 post_detail페이지로 redirect
-    pass
-
-
-def post_anyway(request):
-    return redirect('post:post_list')
+    context = {
+        'tag': tag,
+        'posts': posts,
+        'posts_count': posts_count,
+    }
+    return render(request, 'post/hashtag_post_list.html', context)

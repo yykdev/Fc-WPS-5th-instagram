@@ -5,6 +5,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template import loader
 from django.urls import reverse
+from django.views.decorators.http import require_POST
 
 from post.decorators import post_owner
 from post.forms import CommentForm
@@ -22,6 +23,7 @@ __all__ = (
     'post_modify',
     'post_delete',
     'hashtag_post_list',
+    'post_like_toggle',
 )
 
 
@@ -194,6 +196,35 @@ def post_delete(request, post_pk):
             'post': post,
         }
         return render(request, 'post/post_delete.html', context)
+
+
+@require_POST
+@login_required()
+def post_like_toggle(request, post_pk):
+    # 1. post_pk에 해당하는 Post instance를 변수에 할당
+    post = get_object_or_404(Post, pk=post_pk)
+
+    # 2. post에서 PostLike로의 RelatedManager를 사용해서
+    #    post속성이 post, user속성이 request.user인 PostLike가 있는지 get_or_create
+    # M2M 필드가 중간자 모델을 거치지 않을 경우
+    # if request.user in post.like_users:
+    #     post.like_users.add(request.user)
+
+    # 중간자 모델을 사용 할 경우
+    post_like, post_like_created = post.postlike_set.get_or_create(
+        user=request.user,
+    )
+
+    # 3. 이후 created여부에 따라 해당 PostLike인스턴스를 삭제 또는 그냥 넘어가기
+    if not post_like_created:
+        # 기존에 post_like 가 있었다면 삭제 해 준다
+        post_like.delete()
+
+    # 4. 리턴주소는 next가 주어질 경우 next, 아닐 경우 post_detail로
+    # next = request.GET.get('next')
+    # if next:
+    #     return redirect(next)
+    return redirect('post:post_detail', post_pk=post.pk)
 
 
 def hashtag_post_list(request, tag_name):

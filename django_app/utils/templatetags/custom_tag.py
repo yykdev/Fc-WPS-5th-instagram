@@ -4,7 +4,7 @@ register = template.Library()
 
 @register.filter
 def query_string(q):
-    # value에는 QueryDict가 옴
+    # q 에는 QueryDict가 옴
     # ret = '?'
     # for k, v_list in q.lists():
     #     for v, v_list in v_list:

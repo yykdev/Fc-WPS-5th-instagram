@@ -1,6 +1,8 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+from utils.fields import CustomImageField
+
 
 class User(AbstractUser):
     """
@@ -26,6 +28,11 @@ class User(AbstractUser):
 
     # 이 User모델을 AUTH_USER_MODEL로 사용하도록 settings.py에 설정
     nickname = models.CharField(max_length=24, null=True, unique=True)
+    img_profile = CustomImageField(
+        upload_to='post',
+        blank=True,
+        default_static_image='images/profile.png',
+    )
 
     relations = models.ManyToManyField(
         'self',
@@ -70,11 +77,11 @@ class User(AbstractUser):
             to_user=user
         ).delete()
 
-    def is_follow(self,user):
+    def is_follow(self, user):
         # 해당 user 를 내가 follow하고 있는지 bool여부를 반환
         return self.follow_relations.filter(to_user=user).exists()
 
-    def is_follower(self,user):
+    def is_follower(self, user):
         # 해당 user가 나를 follow하고 있는지 bool여부를 반환
         return self.follower_relations.filter(from_user=user).exists()
 
@@ -91,12 +98,12 @@ class User(AbstractUser):
     @property
     def following(self):
         relations = self.follow_relations.all()
-        return User.objects.filter(pk__in=relations.values('pk'))
+        return User.objects.filter(pk__in=relations.values('to_user'))
 
     @property
     def followers(self):
         relations = self.follower_relations.all()
-        return User.objects.filter(pk__in=relations.values('pk'))
+        return User.objects.filter(pk__in=relations.values('from_user'))
 
 
 class Relation(models.Model):

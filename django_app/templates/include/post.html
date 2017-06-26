@@ -27,7 +27,7 @@
     <div class="post-btn-container clearfix">
       <div class="btn-left">
         <a href="#">
-          <form action="{% url 'post:post_like_toggle' %}" method="post">
+          <form action="{% url 'post:post_like_toggle' post_pk=post.id %}" method="post">
             {% csrf_token %}
             <button type="submit" class="btn">
               {% if user in post.like_users.all %}

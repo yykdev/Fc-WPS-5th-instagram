@@ -1,0 +1,22 @@
+{% extends 'common/base.html' %}
+
+{% block content %}
+<div class="content">
+    <h2>YouTube Search</h2>
+    <form action="">
+        <input type="text" name="q" placeholder="YouTube에서 검색할 키워드를 입력해 주세요">
+    </form>
+    <hr>
+    <div>
+        <ul>
+            {% for video in videos %}
+            <li>
+                <div><h3>{{ forloop.counter }}. {{ video.title }}</h3></div>
+                <div><a href="{% url 'post:youtube_create' youtube_id=video.youtube_id %}" class="btn">포스팅 하기</a></div>
+                <div><img src="{{ video.thumbnails }}" alt=""></div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

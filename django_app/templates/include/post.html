@@ -17,7 +17,11 @@
     -->
     {% if type == 'list' %}
     <a href="{% url 'post:post_detail' post_pk=post.pk %}">
-      <img src="{{ post.photo.url }}" alt="">
+      {% if post.youtube_id == '' %}
+        <img src="{{ post.photo.url }}" alt="">
+      {% elif post.youtube_id != '' %}
+        <iframe width="600" height="360" src="http://www.youtube.com/embed/{{ post.youtube_id }}" frameborder="0" allowfullscreen></iframe>
+      {% endif %}
     </a>
     {% else %}
     <img src="{{ post.photo.url }}" alt="">

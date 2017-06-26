@@ -76,7 +76,7 @@ def profile_edit(request):
         form = UserEditForm(data=request.POST, files=request.FILES, instance=request.user)
         if form.is_valid():
             form.save()
-            return redirect('member:myprofile')
+            return redirect('member:my_profile')
     else:
         form = UserEditForm(instance=request.user)
     context = {

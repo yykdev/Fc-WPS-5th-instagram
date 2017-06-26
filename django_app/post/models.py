@@ -14,6 +14,7 @@ class Post(models.Model):
     # Django가 제공하는 기본 settings.AUTH_USER_MODEL와 연결되도록 수정
     author = models.ForeignKey(settings.AUTH_USER_MODEL)
     photo = models.ImageField(upload_to='post', blank=True)
+    youtube_id = models.CharField(max_length=30, blank=True)
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
     my_comment = models.OneToOneField(
@@ -103,3 +104,27 @@ class Tag(models.Model):
 
     def __str__(self):
         return 'Tag({})'.format(self.name)
+
+
+# [1] 검색결과를 DB에 저장하고, 해당내용을 템플릿에서 보여주기!
+    # 1. 유튜브 영상을 저장할 class Video(models.Model)생성
+    # 2. 검색결과의 videoId를 Video의 youtube_id필드에 저장
+    #       해당필드는 unique해야 함
+    # 3. 검색결과에서 videoId가 Video의 youtube_id와 일치하는 영상이 이미 있을경우에는 pass,
+    #    없을경우 새 Video객체를 만들어 DB에 저장
+    # 4. 이후 검색결과가 아닌 자체 DB에서 QuerySet을 만들어 필터링한 결과를 템플릿에서 표시
+
+class YouTube_Video(models.Model):
+    youtube_id = models.CharField(
+        max_length=50,
+        unique=True,
+    )
+    channelId = models.CharField(
+        max_length=50,
+    )
+    title = models.CharField(
+        max_length=50,
+    )
+    thumbnails = models.CharField(
+        max_length=50,
+    )

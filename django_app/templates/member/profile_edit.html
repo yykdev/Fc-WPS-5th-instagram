@@ -2,11 +2,12 @@
 
 {% block content %}
 <div class="content">
-    <h3>Profile edit ( {{ user }} )</h3>
-    <form action="" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {% include 'include/field_set.html' with form=form %}
-        <button type="submit" class="btn btn-lg btn-blok">프로필 수정하기</button>
-    </form>
+	<h3>Profile edit ({{ user }})</h3>
+	<form action="" enctype="multipart/form-data" method="POST">
+		{% csrf_token %}
+		{% include 'include/field_set.html' with form=form %}
+		<!--button[type=submit].btn.btn-lg.btn-block{프로필 수정하기}-->
+		<button type="submit" class="btn btn-lg btn-block btn-primary">프로필 수정하기</button>
+	</form>
 </div>
 {% endblock %}

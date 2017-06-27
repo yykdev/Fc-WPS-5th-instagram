@@ -76,9 +76,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 AUTH_USER_MODEL = 'member.User'
 LOGIN_URL = 'member:login'
 
-#Facebook
-FACEBOOK_APP_ID ='1342649669165947'
-FACEBOOK_SECRET_CODE = '03ad4ffbc81c686542de0618c5cb9e10'
+# Facebook
+FACEBOOK_APP_ID = '1714579385238490'
+FACEBOOK_SECRET_CODE = '4bf87e8bf3a942a4d83123482b0b74ae'
 
 # Application definition
 INSTALLED_APPS = [
@@ -124,7 +124,7 @@ TEMPLATES = [
 
                 # Custom context processors
                 'member.context_processors.forms',
-                'utils.context_processors.facebook_info'
+                'utils.context_processors.facebook_info',
             ],
         },
     },
@@ -136,9 +136,17 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
 DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    # }
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'instagram',
+        'USER': 'fastcampus',
+        'PASSWORD': 'fastcampus',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 

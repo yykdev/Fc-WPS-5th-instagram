@@ -1,1 +1,1 @@
-from .custom_imageField import CustomImageField
+from .custom_imagefield import CustomImageField

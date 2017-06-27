@@ -1,6 +1,5 @@
 from django import forms
-
-from member.models import User
+from ..models import User
 
 
 class UserEditForm(forms.ModelForm):

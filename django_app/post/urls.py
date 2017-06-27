@@ -47,8 +47,6 @@ urlpatterns = [
 
     # 위쪽의 결과들과 매칭되지 않을 경우
     # url(r'^.*/$', views.post_anyway, name='post_anyway'),
-
     url(r'^youtube/search/$', views.youtube_search, name='youtube_search'),
-
-    url(r'^youtube/create/(?P<youtube_id>.+)/$', views.post_video, name='youtube_create')
+    url(r'^youtube/post/create/$', views.post_create_with_video, name='youtube_post_create'),
 ]

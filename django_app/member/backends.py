@@ -1,6 +1,5 @@
+from django.conf import settings
 from django.contrib.auth import get_user_model
-
-from config import settings
 
 User = get_user_model()
 
@@ -10,7 +9,7 @@ class FacebookBackend:
         username = '{}_{}_{}'.format(
             User.USER_TYPE_FACEBOOK,
             settings.FACEBOOK_APP_ID,
-            facebook_id
+            facebook_id,
         )
         try:
             user = User.objects.get(
@@ -23,6 +22,6 @@ class FacebookBackend:
 
     def get_user(self, user_id):
         try:
-            return User.objects.get(pk=user_id)
+            return User.objets.get(pk=user_id)
         except User.DoesNotExist:
             return None

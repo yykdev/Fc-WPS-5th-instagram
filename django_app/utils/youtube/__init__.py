@@ -2,13 +2,11 @@ import requests
 from googleapiclient.discovery import build
 
 
-
-
 def search_original(q):
     url_api_search = 'https://www.googleapis.com/youtube/v3/search'
     search_params = {
         'part': 'snippet',
-        'key': 'AIzaSyCkjv33k1uxl-p668MgX6SBv_tUZjBGmcU',
+        'key': 'AIzaSyACCLlnn_hlOpNk5XUBpRqs-iZWpbTm-J4',
         'maxResults': '10',
         'type': 'video',
         'q': q,
@@ -21,7 +19,7 @@ def search_original(q):
 
 
 def search(q):
-    DEVELOPER_KEY = "AIzaSyCkjv33k1uxl-p668MgX6SBv_tUZjBGmcU"
+    DEVELOPER_KEY = "AIzaSyACCLlnn_hlOpNk5XUBpRqs-iZWpbTm-J4"
     YOUTUBE_API_SERVICE_NAME = "youtube"
     YOUTUBE_API_VERSION = "v3"
 
@@ -35,21 +33,8 @@ def search(q):
     # query term.
     search_response = youtube.search().list(
         q=q,
-        part="snippet",
-        maxResults=10
+        part="id,snippet",
+        maxResults=10,
+        type='video',
     ).execute()
-
     return search_response
-
-
-# py 파일로 생성할 때 실행 가능하도록 해주는 메소드
-#
-# if __name__ == "__main__":
-#   argparser.add_argument("--q", help="Search term", default="Google")
-#   argparser.add_argument("--max-results", help="Max results", default=25)
-#   args = argparser.parse_args()
-#
-#   try:
-#     search(args)
-#   except HttpError, e:
-#     print "An HTTP error %d occurred:\n%s" % (e.resp.status, e.content)

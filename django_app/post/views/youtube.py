@@ -104,7 +104,6 @@ def youtube_search(request):
     if q:
         # YouTube검색부분을 패키지화
         data = youtube.search(q)
-        print(data)
         for item in data['items']:
             Video.objects.create_from_search_result(item)
         re_pattern = ''.join(['(?=.*{})'.format(item) for item in q.split()])

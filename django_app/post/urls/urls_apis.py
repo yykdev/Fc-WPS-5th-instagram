@@ -2,6 +2,6 @@ from django.conf.urls import url
 
 from .. import apis
 
-urlpattern = [
-    url(r'^$', apis.PostListView.as_view())
+urlpatterns = [
+    url(r'^$', apis.PostListCreateView.as_view()),
 ]

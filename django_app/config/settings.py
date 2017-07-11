@@ -147,6 +147,10 @@ DATABASES = {
         'PASSWORD': 'fastcampus',
         'HOST': 'localhost',
         'PORT': '5432',
+        'TEST': {
+            'USER': 'yykim',
+            'PASSWORD': '',
+        },
     }
 }
 

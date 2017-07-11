@@ -1,3 +1,5 @@
+from rest_framework import generics
+from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -6,32 +8,32 @@ from ..serializers import PostSerializer
 
 __all__ = (
     'PostListCreateView',
+    'PostLikeToggleView',
 )
 
 
-class PostListCreateView(APIView):
-    # get요청이 왔을 때, Post.objects.all()을
-    # PostSerailizer를 통해 Response로 반환
-    # DRF API Guide
-    #   - API View
-    #   - Serializers
-    def get(self, request, *args, **kwargs):
-        posts = Post.objects.all()
-        serializer = PostSerializer(posts, many=True)
-        return Response(serializer.data)
+class PostListCreateView(generics.ListCreateAPIView):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
 
-    def post(self, request, *args, **kwargs):
-        serializer = PostSerializer(data=request.data)
-        if serializer.is_valid():
-            instance = serializer.save(author=request.user)
-            comment_content = request.data.get('comment')
-            if comment_content:
-                instance.my_comment = Comment.objects.create(
-                    post=instance,
-                    author=instance.author,
-                    content=comment_content,
-                )
-                instance.save()
-            return Response(serializer.data, status=201)
-        return Response(serializer.errors, status=400)
+    def perform_create(self, serializer):
+        instance = serializer.save(author=self.request.user)
+        comment_content = self.request.data.get('comment')
+        if comment_content:
+            instance.my_comment = Comment.objects.create(
+                post=instance,
+                author=instance.author,
+                content=comment_content,
+            )
+            instance.save()
 
+
+class PostLikeToggleView(APIView):
+    def post(self, request, post_pk):
+        post_instance = get_object_or_404(pk=post_pk)
+        post_like, post_list_created = post_instance.postlike_set.get_or_created(
+            user=request.user
+        )
+        if not post_list_created:
+            post_like.delete()
+        return Response({'created': post_list_created})

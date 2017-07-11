@@ -13,6 +13,23 @@ class UserSerializer(serializers.ModelSerializer):
         fields = (
             'pk',
             'username',
+            'nickname',
+        )
+
+class UserUpdateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = (
+            'pk',
+            'username',
+            'ori_password',
+            'password1',
+            'password2',
+            'img_profile',
+        )
+        read_only_fields = (
+            'username',
         )
 
 
@@ -22,14 +39,6 @@ class UserCreationSerializer(serializers.Serializer):
     )
     password1 = serializers.CharField(write_only=True)
     password2 = serializers.CharField(write_only=True)
-
-    class Meta:
-        model = User
-        fields = (
-            'pk',
-            'username',
-            'password',
-        )
 
     def validate_username(self, username):
         if User.objects.filter(username=username).exists():
@@ -43,7 +52,7 @@ class UserCreationSerializer(serializers.Serializer):
 
     def save(self, *args, **kwargs):
         username = self.validate_data.get('username', '')
-        password = self.validated_data.get('password', '')
+        password = self.validated_data.get('password1', '')
 
         user = User.objects.create_user(
             username=username,
